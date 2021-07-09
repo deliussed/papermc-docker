@@ -12,7 +12,8 @@ RUN apt-get update \
     && apt-get install -y wget \
     && apt-get install -y jq \
     && rm -rf /var/lib/apt/lists/* \
-    && mkdir /papermc
+    && mkdir /papermc \
+    && chmod 777 papermc.sh
 
 USER 1001
 
