@@ -14,6 +14,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir /papermc
 
+USER 0
+
 # Start script
 CMD ["sh", "./papermc.sh"]
 
