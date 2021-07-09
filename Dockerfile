@@ -18,7 +18,7 @@ RUN apt-get update \
 USER 1001
 
 # Start script
-CMD ["sh", "./papermc.sh"]
+# CMD ["sh", "./papermc.sh"]
 
 # Container setup
 EXPOSE 25565/tcp
