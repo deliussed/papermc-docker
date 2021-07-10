@@ -16,7 +16,8 @@ RUN apt-get update \
     && chmod 777 papermc.sh
     
 RUN chgrp -R 0 papermc.sh && \
-    chmod -R g=u papermc.sh
+    chmod -R g=u papermc.sh && \
+    chmod -R 775 papermc.sh 
 
 USER 0
 
