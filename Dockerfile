@@ -14,8 +14,11 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir /papermc \
     && chmod 777 papermc.sh
+    
+RUN chgrp -R 0 papermc.sh && \
+    chmod -R g=u papermc.sh
 
-USER 1001
+USER 0
 
 # Start script
 # CMD ["sh", "./papermc.sh"]
