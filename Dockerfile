@@ -22,7 +22,7 @@ RUN chgrp -R 0 papermc.sh && \
 USER 0
 
 # Start script
-# CMD ["sh", "./papermc.sh"]
+CMD ["sh", "./papermc.sh"]
 
 # Container setup
 EXPOSE 25565/tcp
