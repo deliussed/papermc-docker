@@ -5,7 +5,7 @@ FROM openjdk:16-slim
 ENV MC_VERSION="latest" \
     PAPER_BUILD="latest" \
     MC_RAM="" \
-    JAVA_OPTS=""
+    JAVA_OPTS="" \
     EULA = true
 
 ADD papermc.sh .
