@@ -6,7 +6,7 @@ ENV MC_VERSION="latest" \
     PAPER_BUILD="latest" \
     MC_RAM="" \
     JAVA_OPTS="" \
-    EULA=true
+    EULA="true"
 
 ADD papermc.sh .
 RUN apt-get update \
