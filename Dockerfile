@@ -60,9 +60,9 @@ COPY /docker-entrypoint.sh /opt/minecraft
 RUN chmod +x /opt/minecraft/docker-entrypoint.sh
 
 # Install gosu
-RUN set -eux && \
-    apk update && \
-    apk add --no-cache su-exec
+#RUN set -eux && \
+#    apk update && \
+#    apk add --no-cache su-exec
 
 RUN chgrp -R 0 /opt/minecraft/ && \
     chmod -R g=u /opt/minecraft/
