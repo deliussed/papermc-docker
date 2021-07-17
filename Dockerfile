@@ -1,24 +1,74 @@
-FROM   registry.access.redhat.com/ubi8/ubi:8.0
+########################################################
+############## We use a java base image ################
+########################################################
+FROM openjdk:16-alpine AS build
 
-# Install the Java runtime, create a user for running the app, and set permissions
-RUN yum install -y --disableplugin=subscription-manager java-1.8.0-openjdk-headless && \
-    yum clean all --disableplugin=subscription-manager -y && \
-    mkdir -p /opt/app-root/papermc_volume && \
-    mkdir -p /opt/app-root/bin
+MAINTAINER Marc Tönsing <marc@marc.tv>
 
-ADD papermc.sh /opt/app-root/bin
+ARG paperspigot_ci_url=https://papermc.io/api/v1/paper/1.17.1/latest/download
+ENV PAPERSPIGOT_CI_URL=$paperspigot_ci_url
 
-RUN chgrp -R 0 /opt/app-root && \
-    chmod -R g=u /opt/app-root
+WORKDIR /opt/minecraft
+
+# Download paperclip
+ADD ${PAPERSPIGOT_CI_URL} paperclip.jar
+
+# Run paperclip and obtain patched jar
+RUN /opt/openjdk-16/bin/java -jar /opt/minecraft/paperclip.jar; exit 0
+
+# Copy built jar
+RUN mv /opt/minecraft/cache/patched*.jar paperspigot.jar
+
+########################################################
+############## Running environment #####################
+########################################################
+FROM openjdk:16-alpine AS runtime
+
+# Working directory
+WORKDIR /data
+
+# Obtain runable jar from build stage
+COPY --from=build /opt/minecraft/paperspigot.jar /opt/minecraft/paperspigot.jar
+
+# Install and run rcon
+ARG RCON_CLI_VER=1.4.8
+ADD https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_amd64.tar.gz /tmp/rcon-cli.tgz
+RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
+  rm /tmp/rcon-cli.tgz
+
+# Volumes for the external data (Server, World, Config...)
+VOLUME "/data"
+
+# Set memory size
+ARG memory_size=3G
+ENV MEMORYSIZE=$memory_size
+
+# Set Java Flags
+ARG java_flags="-XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=mcflags.emc.gs -Dcom.mojang.eula.agree=true"
+ENV JAVAFLAGS=$java_flags
+
+WORKDIR /data
+
+COPY /docker-entrypoint.sh /opt/minecraft
+RUN chmod +x /opt/minecraft/docker-entrypoint.sh
+
+# Install gosu
+RUN set -eux; \
+	apk update; \
+	apk add --no-cache su-exec;
+
+RUN chgrp -R 0 /opt/minecraft/ && \
+    chmod -R g=u /opt/minecraft/
 
 # Container setup
 EXPOSE 22/tcp
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
-VOLUME opt/app-root/papermc_volume
+
 
 USER 1001
 
-# Start script
-CMD /opt/app-root/bin/papermc.sh
+
+# Entrypoint
+ENTRYPOINT ["/opt/minecraft/docker-entrypoint.sh"]
 
