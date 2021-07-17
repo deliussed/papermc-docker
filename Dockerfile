@@ -37,7 +37,7 @@ RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
   rm /tmp/rcon-cli.tgz
 
 # Volumes for the external data (Server, World, Config...)
-VOLUME "/data"
+VOLUME "/opt/minecraft/data"
 
 # Container setup
 EXPOSE 22/tcp
