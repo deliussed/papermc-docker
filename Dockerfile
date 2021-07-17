@@ -66,7 +66,7 @@ RUN chmod +x /opt/minecraft/docker-entrypoint.sh
 
 RUN chgrp -R 0 /opt/minecraft && \
 #    chgrp -R 0 /opt/openjdk-16 && \
-    chmod -R g=u /opt/minecraft && \
+    chmod -R g=u /opt/minecraft
 #    chmod -R g=u /opt/openjdk-16 
 
 USER 1001
