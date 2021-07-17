@@ -1,16 +1,8 @@
-# JRE base
-FROM openjdk:16-slim
+FROM   registry.access.redhat.com/ubi8/ubi:8.0
 
-# Environment variables
-ENV MC_VERSION="latest" \
-    PAPER_BUILD="latest" \
-    MC_RAM="" \
-    JAVA_OPTS=""
-
-RUN apt-get update && \
-    apt-get install -y wget && \
-    apt-get install -y jq && \
-    rm -rf /var/lib/apt/lists/* && \
+# Install the Java runtime, create a user for running the app, and set permissions
+RUN yum install -y --disableplugin=subscription-manager java-1.8.0-openjdk-headless && \
+    yum clean all --disableplugin=subscription-manager -y && \
     mkdir -p /opt/app-root/papermc_volume && \
     mkdir -p /opt/app-root/bin
 
