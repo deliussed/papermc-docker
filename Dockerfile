@@ -1,9 +1,27 @@
 ########################################################
 ############## We use a java base image ################
 ########################################################
-FROM openjdk:16-alpine AS build
+FROM adoptopenjdk:16-jre AS build
 
-MAINTAINER Marc Tönsing <marc@marc.tv>
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive \
+  apt-get install -y \
+    imagemagick \
+    gosu \
+    sudo \
+    net-tools \
+    curl wget \
+    git \
+    jq \
+    dos2unix \
+    mysql-client \
+    tzdata \
+    rsync \
+    nano \
+    unzip \
+    knockd \
+    ttf-dejavu \
+    && apt-get clean
 
 ARG paperspigot_ci_url=https://papermc.io/api/v1/paper/1.17.1/latest/download
 ENV PAPERSPIGOT_CI_URL=$paperspigot_ci_url
@@ -59,8 +77,8 @@ WORKDIR /data
 COPY /docker-entrypoint.sh /opt/minecraft
 RUN chmod +x /opt/minecraft/docker-entrypoint.sh
 
-RUN apk update && \
-    apk add vim
+RUN apt-get update && \
+    apt-get install vim
 
 # Install gosu
 #RUN set -eux && \
