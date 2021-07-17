@@ -39,6 +39,13 @@ RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
 # Volumes for the external data (Server, World, Config...)
 VOLUME "/data"
 
+# Container setup
+EXPOSE 22/tcp
+EXPOSE 25565/tcp
+EXPOSE 25575/tcp
+EXPOSE 25565/udp
+
+
 # Set memory size
 ARG memory_size=3G
 ENV MEMORYSIZE=$memory_size
@@ -53,18 +60,12 @@ COPY /docker-entrypoint.sh /opt/minecraft
 RUN chmod +x /opt/minecraft/docker-entrypoint.sh
 
 # Install gosu
-RUN set -eux; \
-	apk update; \
-	apk add --no-cache su-exec;
+RUN set -eux && \
+    apk update && \
+    apk add --no-cache su-exec
 
 RUN chgrp -R 0 /opt/minecraft/ && \
     chmod -R g=u /opt/minecraft/
-
-# Container setup
-EXPOSE 22/tcp
-EXPOSE 25565/tcp
-EXPOSE 25565/udp
-
 
 USER 1001
 
