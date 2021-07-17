@@ -65,9 +65,9 @@ RUN chmod +x /opt/minecraft/docker-entrypoint.sh
 #    apk add --no-cache su-exec
 
 RUN chgrp -R 0 /opt/minecraft && \
-#    chgrp -R 0 /opt/openjdk-16 && \
-    chmod -R g=u /opt/minecraft
-#    chmod -R g=u /opt/openjdk-16 
+    chgrp -R 0 /data && \
+    chmod -R g=u /opt/minecraft && \
+    chmod -R g=u /data 
 
 USER 1001
 
