@@ -59,6 +59,9 @@ WORKDIR /data
 COPY /docker-entrypoint.sh /opt/minecraft
 RUN chmod +x /opt/minecraft/docker-entrypoint.sh
 
+RUN apk update && \
+    apk add vim
+
 # Install gosu
 #RUN set -eux && \
 #    apk update && \
