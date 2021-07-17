@@ -1,7 +1,9 @@
 ########################################################
 ############## We use a java base image ################
 ########################################################
-FROM adoptopenjdk:16-jre AS build
+FROM openjdk:16-alpine AS build
+
+MAINTAINER Marc Tönsing <marc@marc.tv>
 
 ARG paperspigot_ci_url=https://papermc.io/api/v1/paper/1.17.1/latest/download
 ENV PAPERSPIGOT_CI_URL=$paperspigot_ci_url
