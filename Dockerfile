@@ -3,6 +3,25 @@
 ########################################################
 FROM adoptopenjdk:16-jre AS build
 
+ARG paperspigot_ci_url=https://papermc.io/api/v1/paper/1.17.1/latest/download
+ENV PAPERSPIGOT_CI_URL=$paperspigot_ci_url
+
+WORKDIR /opt/minecraft
+
+# Download paperclip
+ADD ${PAPERSPIGOT_CI_URL} paperclip.jar
+
+# Run paperclip and obtain patched jar
+RUN /opt/openjdk-16/bin/java -jar /opt/minecraft/paperclip.jar; exit 0
+
+# Copy built jar
+RUN mv /opt/minecraft/cache/patched*.jar paperspigot.jar
+
+########################################################
+############## Running environment #####################
+########################################################
+FROM adoptopenjdk:16-jre AS runtime
+
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive \
   apt-get install -y \
@@ -23,25 +42,6 @@ RUN apt-get update \
 #    knockd \
 #    ttf-dejavu \
 #    && apt-get clean
-
-ARG paperspigot_ci_url=https://papermc.io/api/v1/paper/1.17.1/latest/download
-ENV PAPERSPIGOT_CI_URL=$paperspigot_ci_url
-
-WORKDIR /opt/minecraft
-
-# Download paperclip
-ADD ${PAPERSPIGOT_CI_URL} paperclip.jar
-
-# Run paperclip and obtain patched jar
-RUN /opt/openjdk-16/bin/java -jar /opt/minecraft/paperclip.jar; exit 0
-
-# Copy built jar
-RUN mv /opt/minecraft/cache/patched*.jar paperspigot.jar
-
-########################################################
-############## Running environment #####################
-########################################################
-FROM openjdk:16-alpine AS runtime
 
 # Working directory
 WORKDIR /data
